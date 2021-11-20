@@ -10,7 +10,7 @@
         android:id="@+id/backgroundImage"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:src="@drawable/loginBackground"
+        android:src="@drawable/loginbackground"
         app:layout_constraintHeight_percent=".27"
         android:scaleType="centerCrop"
         app:layout_constraintVertical_bias="0"
@@ -63,7 +63,43 @@
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/backgroundImage"
-        app:layout_constraintVertical_bias="0.489"
-        tools:layout_editor_absoluteX="116dp" />
+        app:layout_constraintVertical_bias="0.489" />
+
+    <Button
+        android:id="@+id/signinButtonLogin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_percent=".8"
+        app:layout_constraintVertical_bias=".45"
+        android:text="SIGN IN"
+        android:textColor="@color/White"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="@drawable/button_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <Button
+        android:id="@+id/signupButtonLogin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth_percent=".8"
+        app:layout_constraintVertical_bias=".55"
+        android:text="SIGN UP"
+        android:textColor="@color/White"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="@drawable/button_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

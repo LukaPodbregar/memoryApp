@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/usernameField"
+        android:id="@+id/usernameFieldSignup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintWidth_percent=".8"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/passwordField"
+        android:id="@+id/passwordFieldSignup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Password"
@@ -37,11 +37,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameField"
+        app:layout_constraintTop_toBottomOf="@+id/usernameFieldSignup"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
-        android:id="@+id/cityField"
+        android:id="@+id/cityFieldSignup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="City"
@@ -55,11 +55,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordField"
+        app:layout_constraintTop_toBottomOf="@+id/passwordFieldSignup"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
-        android:id="@+id/countryField"
+        android:id="@+id/countryFieldSignup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Country"
@@ -73,7 +73,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cityField"
+        app:layout_constraintTop_toBottomOf="@+id/cityFieldSignup"
         app:layout_constraintWidth_percent=".8" />
 
     <Button

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MemoryApp</string>
+    <string name="napaka_omrezje">Network error!</string>
+    <string name="napaka_storitev">Service error!</string>
+    <string name="rest_rezultat_dodan">Login successful!</string>
+    <string name="rest_nepricakovan_odgovor">Login unsuccessful</string>
+    <string name="napis_OK">OK</string>
+    <string name="URL_login">http://127.0.0.1/application/users</string>
 </resources>
