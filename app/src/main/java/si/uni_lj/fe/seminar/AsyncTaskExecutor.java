@@ -12,16 +12,16 @@ public class AsyncTaskExecutor {
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     public interface Callback<R> {
-        void onComplete(R rezultat);
+        void onComplete(R result);
     }
 
     public <R> void execute(Callable<R> callable, Callback<R> callback) {
         executor.execute(() -> {
-            final R rezultat;
+            final R result;
             try {
-                rezultat = callable.call();
+                result = callable.call();
                 handler.post(() -> {
-                    callback.onComplete(rezultat);
+                    callback.onComplete(result);
                 });
             } catch (Exception e) {
                 e.printStackTrace();

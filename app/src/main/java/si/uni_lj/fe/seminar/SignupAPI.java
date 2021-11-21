@@ -4,16 +4,21 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.view.View;
+import org.json.JSONObject;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
-class LoginAPI implements Callable<String> {
+class SignupAPI implements Callable<String> {
     private final String username, password, urlService;
     private final Activity callerActivity;
 
-    public LoginAPI(String username, String password, String urlService,Activity callerActivity) {
+    public SignupAPI(String username, String password, String urlService,Activity callerActivity) {
         this.username = String.valueOf(username);
         this.password = String.valueOf(password);
         this.urlService = String.valueOf(urlService);
@@ -35,12 +40,11 @@ class LoginAPI implements Callable<String> {
             try {
                 int responseCode = connect(username, password);
 
-                if(responseCode==200){
-                    Login.didUserSignin = 1;
-                    return callerActivity.getResources().getString(R.string.login_successfully);
+                if(responseCode==201){
+                    return callerActivity.getResources().getString(R.string.signup_successfully);
                 }
-                if(responseCode==401){
-                    return callerActivity.getResources().getString(R.string.login_wrong_password);
+                if(responseCode==409){
+                    return callerActivity.getResources().getString(R.string.signup_username_taken);
                 }
                 else{
                     return callerActivity.getResources().getString(R.string.login_error)+" "+responseCode;
@@ -55,18 +59,27 @@ class LoginAPI implements Callable<String> {
         }
     }
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the content as a InputStream, which it returns as a string.
     private int connect(String username, String password) throws IOException {
-        URL url = new URL(urlService+"/"+username+"/"+password);
+        URL url = new URL(urlService);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setReadTimeout(5000 /* milliseconds */);
         conn.setConnectTimeout(10000 /* milliseconds */);
-        conn.setRequestMethod("GET");
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoInput(true);
 
         try {
-            conn.connect();
+            JSONObject json = new JSONObject();
+            json.put("username", username);
+            json.put("password", password);
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write(json.toString());
+            writer.flush();
+            writer.close();
+            os.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,9 +1,17 @@
 <resources>
     <string name="app_name">MemoryApp</string>
-    <string name="napaka_omrezje">Network error!</string>
-    <string name="napaka_storitev">Service error!</string>
-    <string name="rest_rezultat_dodan">Login successful!</string>
-    <string name="rest_nepricakovan_odgovor">Login unsuccessful</string>
+    <string name="network_error">Network error!</string>
+    <string name="service_error">Service error!</string>
+    <string name="login_successfully">Login successful!</string>
+    <string name="login_wrong_password">Wrong password!</string>
+    <string name="login_error">Login unsuccessful!</string>
     <string name="napis_OK">OK</string>
-    <string name="URL_login">http://127.0.0.1/application/users</string>
+    <string name="URL_signin">http://10.0.2.2/application/login</string>
+    <string name="URL_signup">http://10.0.2.2/application/users</string>
+    <string name="signup_username_taken">Username already taken!</string>
+    <string name="signup_successfully">Signup succesfully!</string>
+    <string name="signin">Sign in</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="signup">Sign up</string>
 </resources>
