@@ -9,9 +9,15 @@
     <string name="URL_signin">http://10.0.2.2/application/login</string>
     <string name="URL_signup">http://10.0.2.2/application/users</string>
     <string name="signup_username_taken">Username already taken!</string>
-    <string name="signup_successfully">Signup succesfully!</string>
+    <string name="signup_successfully">Sign up successful!</string>
     <string name="signin">Sign in</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="signup">Sign up</string>
+    <string name="start">Start</string>
+    <string name="welcome">Welcome to Face remember, \npress START to start playing</string>
+    <string name="createAccount">Create account</string>
+    <string name="login_wrong_username">User not found!</string>
+    <string name="addNewFaces">Add new faces</string>
+    <string name="myFaces">My faces</string>
 </resources>

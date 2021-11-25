@@ -4,14 +4,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
+
+
 class LoginAPI implements Callable<String> {
     private final String username, password, urlService;
     private final Activity callerActivity;
+    private InputStream inputStream;
+    private String returnJson;
 
     public LoginAPI(String username, String password, String urlService,Activity callerActivity) {
         this.username = String.valueOf(username);
@@ -43,7 +53,7 @@ class LoginAPI implements Callable<String> {
                     return callerActivity.getResources().getString(R.string.login_wrong_password);
                 }
                 else{
-                    return callerActivity.getResources().getString(R.string.login_error)+" "+responseCode;
+                    return callerActivity.getResources().getString(R.string.login_wrong_username);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -64,12 +74,45 @@ class LoginAPI implements Callable<String> {
         conn.setReadTimeout(5000 /* milliseconds */);
         conn.setConnectTimeout(10000 /* milliseconds */);
         conn.setRequestMethod("GET");
+        conn.setRequestProperty("Accept", "application/json");
 
         try {
             conn.connect();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        if (conn.getResponseCode() == 200) {
+            inputStream = conn.getInputStream();
+            returnJson = convertStreamToString(inputStream);
+            try {
+                org.json.JSONObject jsonObj = new JSONObject(returnJson);
+                Login.userID = jsonObj.get("userID").toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         return conn.getResponseCode();
+    }
+
+    private static String convertStreamToString(InputStream is) {
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();
     }
 }

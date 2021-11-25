@@ -58,8 +58,8 @@
         android:id="@+id/signupButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintWidth_percent=".8"
-        app:layout_constraintVertical_bias=".7"
+        app:layout_constraintWidth_percent=".7"
+        app:layout_constraintVertical_bias=".5"
         android:text="@string/signup"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -70,5 +70,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+    <ImageView
+        android:id="@+id/signupBack"
+        android:layout_width="65dp"
+        android:layout_height="55dp"
+        android:src="@drawable/icon_back"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias=".90"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".98" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

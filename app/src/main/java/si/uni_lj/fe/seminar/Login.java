@@ -7,15 +7,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class Login extends AppCompatActivity {
 
     private String username, password, urlService;
-    private Button signinButtonLogin, signupButtonLogin, signinButton, signupButton;
+    private TextView createAccount;
+    private Button signinButton, signupButton;
+    private ImageView backButton, signoutButton;
     EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup;
     Login login;
     static int didUserSignin;
+    static String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,49 +29,41 @@ public class Login extends AppCompatActivity {
         this.login = this;
 
         if (didUserSignin == 0) {
-            setContentView(R.layout.activity_login);
-            signinButtonLogin = findViewById(R.id.signinButtonLogin);
-            signupButtonLogin = findViewById(R.id.signupButtonLogin);
-
-            signinButtonLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setContentView(R.layout.login_tab_fragment);
-                    signinAction();
-                }
-            });
-
-            signupButtonLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    setContentView(R.layout.signup_tab_fragment);
-                    signupAction();
-                }
-            });
+            setContentView(R.layout.login_tab_fragment);
+            signinAction();
         }
-        else {
-            setContentView(R.layout.activity_main);
-        }
-
     }
 
 
     // Functions
+
+    private void mainMenu(){
+        setContentView(R.layout.activity_main);
+        signoutButton = findViewById(R.id.signoutButton);
+        signoutButton.setOnClickListener(v -> {
+            setContentView(R.layout.login_tab_fragment);
+            didUserSignin = 0;
+            signinAction();
+        });
+    }
 
     private void signinAction() {
         usernameField = findViewById(R.id.usernameField);
         passwordField = findViewById(R.id.passwordField);
         signinButton = findViewById(R.id.loginButton);
         urlService = getResources().getString(R.string.URL_signin);
-        signinButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                username = String.valueOf(usernameField.getText());
-                password = String.valueOf(passwordField.getText());
-                if(!username.equals("") && !password.equals("")) {
-                   new AsyncTaskExecutor().execute(new LoginAPI(username, password, urlService, login), (result) -> didUserSignin(result));
-                }
+        signinButton.setOnClickListener(v -> {
+            username = String.valueOf(usernameField.getText());
+            password = String.valueOf(passwordField.getText());
+            if(!username.equals("") && !password.equals("")) {
+               new AsyncTaskExecutor().execute(new LoginAPI(username, password, urlService, login), (result) -> didUserSignin(result));
             }
+        });
+        createAccount = findViewById(R.id.createAccount);
+
+        createAccount.setOnClickListener(v -> {
+            setContentView(R.layout.signup_tab_fragment);
+            signupAction();
         });
     }
 
@@ -74,16 +71,21 @@ public class Login extends AppCompatActivity {
         usernameFieldSignup = findViewById(R.id.usernameFieldSignup);
         passwordFieldSignup = findViewById(R.id.passwordFieldSignup);
         signupButton = findViewById(R.id.signupButton);
+        backButton = findViewById(R.id.signupBack);
         urlService = getResources().getString(R.string.URL_signup);
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                username = String.valueOf(usernameFieldSignup.getText());
-                password = String.valueOf(passwordFieldSignup.getText());
-                if(!username.equals("") && !password.equals("")) {
-                    new AsyncTaskExecutor().execute(new SignupAPI(username, password, urlService, login), (result) -> didUserSignup(result));
-                }
+
+        signupButton.setOnClickListener(v -> {
+            username = String.valueOf(usernameFieldSignup.getText());
+            password = String.valueOf(passwordFieldSignup.getText());
+            if(!username.equals("") && !password.equals("")) {
+                new AsyncTaskExecutor().execute(new SignupAPI(username, password, urlService, login), (result) -> didUserSignup(result));
             }
+        });
+
+        backButton.setOnClickListener(v -> {
+            setContentView(R.layout.login_tab_fragment);
+            signinAction();
+            return;
         });
     }
 
@@ -97,7 +99,7 @@ public class Login extends AppCompatActivity {
 
     private void didUserSignin(String result) {
         if (didUserSignin == 1){
-            setContentView(R.layout.activity_main);
+            mainMenu();
         }
         notificationToast(result);
     }
