@@ -2,8 +2,10 @@ package si.uni_lj.fe.seminar;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,9 +23,9 @@ class LoginAPI implements Callable<String> {
     private final String username, password, urlService;
     private final Activity callerActivity;
     private InputStream inputStream;
-    private String returnJson;
+    private String returnJson, token;
 
-    public LoginAPI(String username, String password, String urlService,Activity callerActivity) {
+    public LoginAPI(String username, String password, String urlService, Activity callerActivity) {
         this.username = String.valueOf(username);
         this.password = String.valueOf(password);
         this.urlService = String.valueOf(urlService);
@@ -86,7 +88,13 @@ class LoginAPI implements Callable<String> {
             returnJson = convertStreamToString(inputStream);
             try {
                 org.json.JSONObject jsonObj = new JSONObject(returnJson);
-                Login.userID = jsonObj.get("userID").toString();
+                token = jsonObj.get("token").toString();
+
+                Context applicationContext = Login.getContextOfApplication();
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("token",token);
+                editor.apply();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
