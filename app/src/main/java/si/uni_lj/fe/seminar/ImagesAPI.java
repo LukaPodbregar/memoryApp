@@ -2,10 +2,8 @@ package si.uni_lj.fe.seminar;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.preference.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,9 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 class ImagesAPI implements Callable<String> {
@@ -50,14 +47,10 @@ public String call() {
             int responseCode = connect(token);
 
             if(responseCode==201){
-                Login.didUserSignin = 1;
-                return callerActivity.getResources().getString(R.string.login_successfully);
-            }
-            if(responseCode==401){
-                return callerActivity.getResources().getString(R.string.login_wrong_password);
+                return callerActivity.getResources().getString(R.string.images_download_successful);
             }
             else{
-                return callerActivity.getResources().getString(R.string.login_wrong_username);
+                return callerActivity.getResources().getString(R.string.images_download_error);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,21 +83,24 @@ public String call() {
                 JSONArray jsonArray = new JSONArray(returnJson);
                 String imageNames[] =new String[jsonArray.length()];
                 String imagePaths[] =new String[jsonArray.length()];
+                String imageGender[] =new String[jsonArray.length()];
                 Context applicationContext = Login.getContextOfApplication();
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-                SharedPreferences.Editor editor = prefs.edit();
 
+                TinyDB tinydb = new TinyDB(applicationContext);
                 for(int i=0;i<jsonArray.length();i++){
                     JSONObject jsonObjTemp = (JSONObject) jsonArray.get(i);
                     imageNames[i] = jsonObjTemp.get("imageName").toString();
                     imagePaths[i] = jsonObjTemp.get("path").toString();
+                    imageGender[i] = jsonObjTemp.get("gender").toString();
                 }
-                Set<String> mySet = new HashSet<>(Arrays.asList(imageNames));
-                Set<String> mySet1 = new HashSet<>(Arrays.asList(imagePaths));
+                ArrayList<String> mySet = new ArrayList(Arrays.asList(imageNames));
+                ArrayList<String> mySet1 = new ArrayList(Arrays.asList(imagePaths));
+                ArrayList<String> mySet2 = new ArrayList(Arrays.asList(imageGender));
 
-                editor.putStringSet("imageName", mySet);
-                editor.putStringSet("imagePath", mySet1);
-                editor.apply();
+                tinydb.putListString("imageName", mySet);
+                tinydb.putListString("imagePath", mySet1);
+                tinydb.putListString("imageGender", mySet2);
+
 
             } catch (JSONException e) {
                 e.printStackTrace();

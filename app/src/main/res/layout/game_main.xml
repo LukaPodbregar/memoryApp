@@ -13,5 +13,76 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@tools:sample/avatars"
+        app:layout_constraintVertical_bias=".3"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"/>
+
+    <Button
+        android:id="@+id/nameButton1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:text="@string/nameButton1"
+        android:textColor="@color/White"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/downloadedImage"
+        app:layout_constraintVertical_bias=".35"
+        app:layout_constraintWidth_percent=".4"
+        app:layout_constraintHorizontal_bias="0.10"/>
+
+    <Button
+        android:id="@+id/nameButton2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:text="@string/nameButton2"
+        android:textColor="@color/White"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/downloadedImage"
+        app:layout_constraintVertical_bias=".35"
+        app:layout_constraintWidth_percent=".4"
+        app:layout_constraintHorizontal_bias="0.90"/>
+
+    <Button
+        android:id="@+id/nameButton3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:text="@string/nameButton3"
+        android:textColor="@color/White"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/downloadedImage"
+        app:layout_constraintVertical_bias=".55"
+        app:layout_constraintWidth_percent=".4"
+        app:layout_constraintHorizontal_bias="0.90"/>
+
+    <Button
+        android:id="@+id/nameButton4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_background"
+        android:text="@string/nameButton4"
+        android:textColor="@color/White"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/downloadedImage"
+        app:layout_constraintVertical_bias=".55"
+        app:layout_constraintWidth_percent=".4"
+        app:layout_constraintHorizontal_bias="0.10"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

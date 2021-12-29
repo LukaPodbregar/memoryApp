@@ -3,9 +3,7 @@ package si.uni_lj.fe.seminar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,18 +12,20 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Login extends AppCompatActivity {
 
-    private String username, password, urlService, urlServiceImages, token;
+    private String username, password, urlService, urlServiceImages, token, urlNames;
     private TextView createAccount;
-    private Button signinButton, signupButton, startButton;
+    private Button signinButton, signupButton, startButton, nameButton1, nameButton2, nameButton3, nameButton4;
     private ImageView backButton, signoutButton, imageView;
     EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup;
-    static int didUserSignin;
+    static int didUserSignin, rightAnswer;
     public static Context contextOfApplication;
-    Set<String> imagePath;
+    TinyDB tinydb;
+    ArrayList imagePath, imageGender, imageName, randomNames;
 
 
     @Override
@@ -42,7 +42,7 @@ public class Login extends AppCompatActivity {
 
     // Functions
 
-    private void mainMenu(){
+    private void mainMenu() {
         setContentView(R.layout.activity_main);
         signoutButton = findViewById(R.id.signoutButton);
         startButton = findViewById(R.id.startGame);
@@ -53,24 +53,76 @@ public class Login extends AppCompatActivity {
             signinAction();
         });
         startButton.setOnClickListener(v -> {
-            Context applicationContext = Login.getContextOfApplication();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext);
-            token = prefs.getString("token", "");
-            urlServiceImages = getResources().getString(R.string.URL_images);
-            if (!token.equals("")) {
-                setContentView(R.layout.game_main);
-                new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages,this), (result) -> {
-                    imagePath = prefs.getStringSet("imagePath", null);
-                    Object[] imagePathArray = imagePath.toArray();
-                    imageView = findViewById(R.id.downloadedImage);
-                    String urlTest = "http://10.0.2.2/application/"+imagePathArray[0];
-                    Glide.with(this).load(urlTest).into(imageView);});
-
-            }
+            game();
         });
     }
 
+    private void game() {
+        Context applicationContext = Login.getContextOfApplication();
+        TinyDB tinydb = new TinyDB(applicationContext);
+        token = tinydb.getString("token");
+        urlServiceImages = getResources().getString(R.string.URL_images);
+        setContentView(R.layout.game_main);
+        new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> {
+            startGame();
+        });
 
+
+    }
+
+    private void startGame(){
+        int i = 0;
+        Context applicationContext = Login.getContextOfApplication();
+        loadNewFace(i, applicationContext);
+
+    }
+    private void loadNewFace(int i, Context applicationContext){
+        TinyDB tinydb = new TinyDB(applicationContext);
+        imagePath = tinydb.getListString("imagePath");
+        imageGender = tinydb.getListString("imageGender");
+        imageName = tinydb.getListString("imageName");
+        urlNames = getResources().getString(R.string.URL_names);
+
+        Object[] imagePathArray = imagePath.toArray();
+        Object[] imageNameArray = imageName.toArray();
+        Object[] imageGenderArray = imageGender.toArray();
+
+        imageView = findViewById(R.id.downloadedImage);
+        String urlTest = "http://10.0.2.2/application/"+imagePathArray[i];
+        Glide.with(this).load(urlTest).into(imageView);
+
+        String tempGender = (String) imageGenderArray[i];
+        new AsyncTaskExecutor().execute(new NamesAPI(tempGender, urlNames,this), (result) -> {});
+        randomNames = tinydb.getListString("names");
+        Object[] randomNamesArray = randomNames.toArray();
+
+        nameButton1 = findViewById(R.id.nameButton1);
+        nameButton2 = findViewById(R.id.nameButton2);
+        nameButton3 = findViewById(R.id.nameButton3);
+        nameButton4 = findViewById(R.id.nameButton4);
+
+        Random r = new Random();
+        rightAnswer = r.nextInt(5 - 1) + 1;
+
+        nameButton1.setText((String) randomNamesArray[1]);
+        nameButton2.setText((String) randomNamesArray[2]);
+        nameButton3.setText((String) randomNamesArray[3]);
+        nameButton4.setText((String) randomNamesArray[4]);
+        switch (rightAnswer) {
+            case 1:
+                nameButton1.setText((String) imageNameArray[i]);
+                break;
+            case 2:
+                nameButton2.setText((String) imageNameArray[i]);
+                break;
+            case 3:
+                nameButton3.setText((String) imageNameArray[i]);
+                break;
+            case 4:
+                nameButton4.setText((String) imageNameArray[i]);
+                break;
+        }
+    }
 
     private void signinAction() {
         usernameField = findViewById(R.id.usernameField);

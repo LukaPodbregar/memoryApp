@@ -5,28 +5,29 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-
-
-class LoginAPI implements Callable<String> {
-    private final String username, password, urlService;
+class NamesAPI implements Callable<String> {
+    private String gender, urlService;
     private final Activity callerActivity;
     private InputStream inputStream;
-    private String returnJson, token;
+    private String returnJson;
 
-    public LoginAPI(String username, String password, String urlService, Activity callerActivity) {
-        this.username = String.valueOf(username);
-        this.password = String.valueOf(password);
+    public NamesAPI (String gender, String urlService, Activity callerActivity){
         this.urlService = String.valueOf(urlService);
+        this.gender = gender;
         this.callerActivity = callerActivity;
     }
 
@@ -43,17 +44,13 @@ class LoginAPI implements Callable<String> {
         }
         if (networkInfo != null && networkInfo.isConnected()) {
             try {
-                int responseCode = connect(username, password);
+                int responseCode = connect(gender);
 
-                if(responseCode==200){
-                    Login.didUserSignin = 1;
-                    return callerActivity.getResources().getString(R.string.login_successfully);
-                }
-                if(responseCode==401){
-                    return callerActivity.getResources().getString(R.string.login_wrong_password);
+                if(responseCode==201){
+                    return callerActivity.getResources().getString(R.string.names_download_successful);
                 }
                 else{
-                    return callerActivity.getResources().getString(R.string.login_wrong_username);
+                    return callerActivity.getResources().getString(R.string.names_download_error);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -65,10 +62,8 @@ class LoginAPI implements Callable<String> {
         }
     }
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the content as a InputStream, which it returns as a string.
-    private int connect(String username, String password) throws IOException {
-        URL url = new URL(urlService+"/"+username+"/"+password);
+    private int connect(String gender) throws IOException {
+        URL url = new URL(urlService+"/"+gender);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setReadTimeout(5000 /* milliseconds */);
@@ -81,16 +76,21 @@ class LoginAPI implements Callable<String> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (conn.getResponseCode() == 200) {
+        if (conn.getResponseCode() == 201) {
             inputStream = conn.getInputStream();
             returnJson = convertStreamToString(inputStream);
             try {
-                org.json.JSONObject jsonObj = new JSONObject(returnJson);
-                token = jsonObj.get("token").toString();
-
+                JSONArray jsonArray = new JSONArray(returnJson);
+                String names[] =new String[jsonArray.length()];
                 Context applicationContext = Login.getContextOfApplication();
                 TinyDB tinydb = new TinyDB(applicationContext);
-                tinydb.putString("token",token);
+
+                for(int i=0;i<jsonArray.length();i++){
+                    JSONObject jsonObjTemp = (JSONObject) jsonArray.get(i);
+                    names[i] = jsonObjTemp.get("name").toString();
+                }
+                ArrayList<String> mySet = new ArrayList(Arrays.asList(names));
+                tinydb.putListString("names", mySet);
 
             } catch (JSONException e) {
                 e.printStackTrace();

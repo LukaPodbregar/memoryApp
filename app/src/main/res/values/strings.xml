@@ -21,4 +21,13 @@
     <string name="addNewFaces">Add new faces</string>
     <string name="myFaces">My faces</string>
     <string name="URL_images">http://10.0.2.2/application/images</string>
+    <string name="URL_names">http://10.0.2.2/application/names</string>
+    <string name="images_download_successful">Images download successful</string>
+    <string name="images_download_error">Error downloading images</string>
+    <string name="names_download_successful">Names download successful</string>
+    <string name="names_download_error">Error downloading names</string>
+    <string name="nameButton1" />
+    <string name="nameButton2" />
+    <string name="nameButton3" />
+    <string name="nameButton4" />
 </resources>
