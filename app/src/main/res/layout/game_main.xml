@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/downloadedImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/downloadedImage"
-        app:layout_constraintVertical_bias=".35"
+        app:layout_constraintVertical_bias=".2"
         app:layout_constraintWidth_percent=".4"
         app:layout_constraintHorizontal_bias="0.10"/>
 
@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/downloadedImage"
-        app:layout_constraintVertical_bias=".35"
+        app:layout_constraintVertical_bias=".2"
         app:layout_constraintWidth_percent=".4"
         app:layout_constraintHorizontal_bias="0.90"/>
 
@@ -85,4 +85,60 @@
         app:layout_constraintVertical_bias=".55"
         app:layout_constraintWidth_percent=".4"
         app:layout_constraintHorizontal_bias="0.10"/>
+
+    <TextView
+        android:id="@+id/faceNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".95"
+        app:layout_constraintHorizontal_bias=".85"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:id="@+id/faceNumber2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/outOf"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".95"
+        app:layout_constraintHorizontal_bias=".95"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:id="@+id/rightAnswerCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".10"
+        app:layout_constraintHorizontal_bias=".75"
+        android:textSize="30dp"
+        android:textColor="@color/Green"/>
+
+    <TextView
+        android:id="@+id/wrongAnswerCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".10"
+        app:layout_constraintHorizontal_bias=".80"
+        android:textSize="30dp"
+        android:textColor="@color/Red"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

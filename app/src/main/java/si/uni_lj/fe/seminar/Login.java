@@ -12,17 +12,21 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class Login extends AppCompatActivity {
 
-    private String username, password, urlService, urlServiceImages, token, urlNames;
-    private TextView createAccount;
+    private String username, password, urlService, urlServiceImages, token, urlNames, rightAnswerNotification, wrongAnswerNotification;
+    private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
     private Button signinButton, signupButton, startButton, nameButton1, nameButton2, nameButton3, nameButton4;
-    private ImageView backButton, signoutButton, imageView;
+    private ImageView backButton, signoutButton, imageView, summaryBackButton;
     EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup;
     static int didUserSignin, rightAnswer;
+    private int pageNumber, rightAnswerCounter, wrongAnswerCounter;
     public static Context contextOfApplication;
     TinyDB tinydb;
     ArrayList imagePath, imageGender, imageName, randomNames;
@@ -71,11 +75,116 @@ public class Login extends AppCompatActivity {
     }
 
     private void startGame(){
-        int i = 0;
+        pageNumber = 0;
+        rightAnswerCounter = 0;
+        wrongAnswerCounter = 0;
         Context applicationContext = Login.getContextOfApplication();
-        loadNewFace(i, applicationContext);
+        loadNewFace(pageNumber, applicationContext);
 
+        nameButton1 = findViewById(R.id.nameButton1);
+        nameButton2 = findViewById(R.id.nameButton2);
+        nameButton3 = findViewById(R.id.nameButton3);
+        nameButton4 = findViewById(R.id.nameButton4);
+
+        nameButton1.setOnClickListener(v -> {
+            if (rightAnswer == 1){
+                rightAnswer();
+            }
+            else{
+                wrongAnswer();
+            }
+            TinyDB tinydb = new TinyDB(applicationContext);
+            imagePath = tinydb.getListString("imagePath");
+            if (pageNumber<imagePath.size()) {
+                loadNewFace(pageNumber, applicationContext);
+            }
+            else {
+                android.os.SystemClock.sleep(500);
+                afterGameSummary();
+            }
+        });
+
+        nameButton2.setOnClickListener(v -> {
+            if (rightAnswer == 2){
+                rightAnswer();
+            }
+            else{
+                wrongAnswer();
+            }
+            if (pageNumber<imagePath.size()) {
+                loadNewFace(pageNumber, applicationContext);
+            }
+            else {
+                android.os.SystemClock.sleep(500);
+                afterGameSummary();
+            }
+        });
+
+        nameButton3.setOnClickListener(v -> {
+            if (rightAnswer == 3){
+                rightAnswer();
+            }
+            else{
+                wrongAnswer();
+            }
+            if (pageNumber<imagePath.size()) {
+                loadNewFace(pageNumber, applicationContext);
+            }
+            else {
+                android.os.SystemClock.sleep(500);
+                afterGameSummary();
+            }
+        });
+
+        nameButton4.setOnClickListener(v -> {
+            if (rightAnswer == 4){
+                rightAnswer();
+            }
+            else{
+                wrongAnswer();
+            }
+            if (pageNumber<imagePath.size()) {
+                loadNewFace(pageNumber, applicationContext);
+            }
+            else {
+                android.os.SystemClock.sleep(500);
+                afterGameSummary();
+            }
+        });
     }
+
+    private void afterGameSummary(){
+        setContentView(R.layout.after_game_report);
+        wrongAnswerCount = findViewById(R.id.wrongAnswerCountSummary);
+        wrongAnswerCount.setText(Integer.toString(wrongAnswerCounter));
+        rightAnswerCount = findViewById(R.id.rightAnswerCountSummary);
+        rightAnswerCount.setText(Integer.toString(rightAnswerCounter));
+        summaryBackButton = findViewById(R.id.summaryBack);
+        summaryBackButton.setOnClickListener(v -> {
+            mainMenu();
+        });
+    }
+
+    private void rightAnswer(){
+        rightAnswerNotification = "You got the right answer!";
+        notificationToast(rightAnswerNotification);
+        pageNumber = pageNumber+1;
+        rightAnswerCounter = rightAnswerCounter+1;
+        rightAnswerCount = findViewById(R.id.rightAnswerCount);
+        rightAnswerCount.setText(Integer.toString(rightAnswerCounter));
+        android.os.SystemClock.sleep(500);
+    }
+
+    private void wrongAnswer(){
+        wrongAnswerNotification = "You got the wrong answer!";
+        notificationToast(wrongAnswerNotification);
+        pageNumber = pageNumber+1;
+        wrongAnswerCounter = wrongAnswerCounter+1;
+        wrongAnswerCount = findViewById(R.id.wrongAnswerCount);
+        wrongAnswerCount.setText(Integer.toString(wrongAnswerCounter));
+        android.os.SystemClock.sleep(500);
+    }
+
     private void loadNewFace(int i, Context applicationContext){
         TinyDB tinydb = new TinyDB(applicationContext);
         imagePath = tinydb.getListString("imagePath");
@@ -101,13 +210,22 @@ public class Login extends AppCompatActivity {
         nameButton3 = findViewById(R.id.nameButton3);
         nameButton4 = findViewById(R.id.nameButton4);
 
+        faceNumber = findViewById(R.id.faceNumber);
+        faceNumber.setText(Integer.toString(i+1));
+
+        for (int k = 0; k<4; k++){
+            if (randomNamesArray[k].equals(imageNameArray[i])){
+                randomNamesArray[k] = randomNamesArray[6];
+            }
+        }
+
         Random r = new Random();
         rightAnswer = r.nextInt(5 - 1) + 1;
 
-        nameButton1.setText((String) randomNamesArray[1]);
-        nameButton2.setText((String) randomNamesArray[2]);
-        nameButton3.setText((String) randomNamesArray[3]);
-        nameButton4.setText((String) randomNamesArray[4]);
+        nameButton1.setText((String) randomNamesArray[0]);
+        nameButton2.setText((String) randomNamesArray[1]);
+        nameButton3.setText((String) randomNamesArray[2]);
+        nameButton4.setText((String) randomNamesArray[3]);
         switch (rightAnswer) {
             case 1:
                 nameButton1.setText((String) imageNameArray[i]);

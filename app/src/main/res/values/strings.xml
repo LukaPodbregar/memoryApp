@@ -30,4 +30,7 @@
     <string name="nameButton2" />
     <string name="nameButton3" />
     <string name="nameButton4" />
+    <string name="outOf">/10</string>
+    <string name="rightAnswerNotification">You got the right answer!</string>
+    <string name="yourScore">Your score:</string>
 </resources>
