@@ -22,8 +22,8 @@ public class Login extends AppCompatActivity {
 
     private String username, password, urlService, urlServiceImages, token, urlNames, rightAnswerNotification, wrongAnswerNotification;
     private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
-    private Button signinButton, signupButton, startButton, nameButton1, nameButton2, nameButton3, nameButton4;
-    private ImageView backButton, signoutButton, imageView, summaryBackButton;
+    private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4;
+    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton;
     EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup;
     static int didUserSignin, rightAnswer;
     private int pageNumber, rightAnswerCounter, wrongAnswerCounter;
@@ -50,6 +50,7 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         signoutButton = findViewById(R.id.signoutButton);
         startButton = findViewById(R.id.startGame);
+        faceLibrary = findViewById(R.id.myFaces);
 
         signoutButton.setOnClickListener(v -> {
             setContentView(R.layout.login_tab_fragment);
@@ -59,6 +60,48 @@ public class Login extends AppCompatActivity {
         startButton.setOnClickListener(v -> {
             game();
         });
+        faceLibrary.setOnClickListener(v -> {
+            library();
+        });
+    }
+
+    private void library(){
+        setContentView(R.layout.library_selection);
+        Context applicationContext = Login.getContextOfApplication();
+        TinyDB tinydb = new TinyDB(applicationContext);
+        token = tinydb.getString("token");
+        urlServiceImages = getResources().getString(R.string.URL_images);
+        new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> {
+            loadLibrary(applicationContext, tinydb);
+        });
+        libraryBackButton = findViewById(R.id.libraryBack);
+        libraryBackButton.setOnClickListener(v -> {
+            mainMenu();
+        });
+    }
+
+    private void loadLibrary(Context applicationContext, TinyDB tinydb){
+        imagePath = tinydb.getListString("imagePath");
+        imageGender = tinydb.getListString("imageGender");
+        imageName = tinydb.getListString("imageName");
+        urlNames = getResources().getString(R.string.URL_names);
+
+        Object[] imagePathArray = imagePath.toArray();
+        Object[] imageNameArray = imageName.toArray();
+        Object[] imageGenderArray = imageGender.toArray();
+
+        ImageView[]  imageViews = new ImageView[imagePathArray.length];
+
+        for (int j = 0; j < imagePathArray.length; j++) {
+            String viewImage = "libraryImage" + (j + 1);
+            int resIDImage = getResources().getIdentifier(viewImage, "id", getPackageName());
+            imageViews[j] = ((ImageView) findViewById(resIDImage));
+        }
+        ImageView zz = imageViews[1];
+        for (int k = 0; k<imagePathArray.length; k++) {
+            String urlImage = "http://10.0.2.2/application/" + imagePathArray[k];
+            Glide.with(this).load(urlImage).into(imageViews[k]);
+        }
     }
 
     private void game() {
@@ -70,8 +113,6 @@ public class Login extends AppCompatActivity {
         new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> {
             startGame();
         });
-
-
     }
 
     private void startGame(){
@@ -197,49 +238,49 @@ public class Login extends AppCompatActivity {
         Object[] imageGenderArray = imageGender.toArray();
 
         imageView = findViewById(R.id.downloadedImage);
-        String urlTest = "http://10.0.2.2/application/"+imagePathArray[i];
-        Glide.with(this).load(urlTest).into(imageView);
+        String urlImage = "http://10.0.2.2/application/"+imagePathArray[i];
+        Glide.with(this).load(urlImage).into(imageView);
 
         String tempGender = (String) imageGenderArray[i];
-        new AsyncTaskExecutor().execute(new NamesAPI(tempGender, urlNames,this), (result) -> {});
-        randomNames = tinydb.getListString("names");
-        Object[] randomNamesArray = randomNames.toArray();
+        new AsyncTaskExecutor().execute(new NamesAPI(tempGender, urlNames,this), (result) -> {
+            randomNames = tinydb.getListString("names");
+            Object[] randomNamesArray = randomNames.toArray();
 
-        nameButton1 = findViewById(R.id.nameButton1);
-        nameButton2 = findViewById(R.id.nameButton2);
-        nameButton3 = findViewById(R.id.nameButton3);
-        nameButton4 = findViewById(R.id.nameButton4);
+            nameButton1 = findViewById(R.id.nameButton1);
+            nameButton2 = findViewById(R.id.nameButton2);
+            nameButton3 = findViewById(R.id.nameButton3);
+            nameButton4 = findViewById(R.id.nameButton4);
 
-        faceNumber = findViewById(R.id.faceNumber);
-        faceNumber.setText(Integer.toString(i+1));
+            faceNumber = findViewById(R.id.faceNumber);
+            faceNumber.setText(Integer.toString(i+1));
 
-        for (int k = 0; k<4; k++){
-            if (randomNamesArray[k].equals(imageNameArray[i])){
-                randomNamesArray[k] = randomNamesArray[6];
+            for (int k = 0; k<4; k++){
+                if (randomNamesArray[k].equals(imageNameArray[i])){
+                    randomNamesArray[k] = randomNamesArray[6];
+                }
             }
-        }
 
-        Random r = new Random();
-        rightAnswer = r.nextInt(5 - 1) + 1;
+            Random r = new Random();
+            rightAnswer = r.nextInt(5 - 1) + 1;
 
-        nameButton1.setText((String) randomNamesArray[0]);
-        nameButton2.setText((String) randomNamesArray[1]);
-        nameButton3.setText((String) randomNamesArray[2]);
-        nameButton4.setText((String) randomNamesArray[3]);
-        switch (rightAnswer) {
-            case 1:
-                nameButton1.setText((String) imageNameArray[i]);
-                break;
-            case 2:
-                nameButton2.setText((String) imageNameArray[i]);
-                break;
-            case 3:
-                nameButton3.setText((String) imageNameArray[i]);
-                break;
-            case 4:
-                nameButton4.setText((String) imageNameArray[i]);
-                break;
-        }
+            nameButton1.setText((String) randomNamesArray[0]);
+            nameButton2.setText((String) randomNamesArray[1]);
+            nameButton3.setText((String) randomNamesArray[2]);
+            nameButton4.setText((String) randomNamesArray[3]);
+            switch (rightAnswer) {
+                case 1:
+                    nameButton1.setText((String) imageNameArray[i]);
+                    break;
+                case 2:
+                    nameButton2.setText((String) imageNameArray[i]);
+                    break;
+                case 3:
+                    nameButton3.setText((String) imageNameArray[i]);
+                    break;
+                case 4:
+                    nameButton4.setText((String) imageNameArray[i]);
+                    break;
+            }});
     }
 
     private void signinAction() {
