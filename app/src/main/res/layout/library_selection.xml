@@ -5,159 +5,143 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/libraryText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/yourFaces"
-        android:textSize="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".05" />
-
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@+id/libraryText">
+        android:layout_height="match_parent">
 
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginVertical="100dp"
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/libraryBack"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:src="@drawable/icon_back"
+                android:layout_marginHorizontal="10dp"/>
+
+            <TextView
+                android:id="@+id/libraryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:layout_marginHorizontal="50dp"
+                android:layout_toRightOf="@id/libraryBack"
+                android:text="@string/yourFaces"
+                android:textSize="30dp" />
+
+            <ImageView
+                android:id="@+id/libraryNextPage"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_toRightOf="@id/libraryPreviousPage"
+                android:layout_marginVertical="10dp"
+                android:src="@drawable/icon_forward"/>
+
+            <ImageView
+                android:id="@+id/libraryPreviousPage"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginVertical="10dp"
+                android:layout_toRightOf="@id/libraryText"
+                android:src="@drawable/icon_back" />
+
+            <ImageView
                 android:id="@+id/libraryImage1"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@id/libraryText"
+                android:layout_alignParentLeft="true"
+                />
 
             <ImageView
                 android:id="@+id/libraryImage2"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias=".05"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@id/libraryText"
+                android:layout_alignParentRight="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage3"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/libraryImage2"
-                app:layout_constraintTop_toBottomOf="@+id/libraryText"
-                app:layout_constraintVertical_bias="0.049"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage1"
+                android:layout_alignParentLeft="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage4"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/libraryImage1"
-                app:layout_constraintVertical_bias="0"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage2"
+                android:layout_alignParentRight="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage5"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/libraryImage4"
-                app:layout_constraintTop_toBottomOf="@+id/libraryImage2"
-                app:layout_constraintVertical_bias="0"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage3"
+                android:layout_alignParentLeft="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage6"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/libraryImage5"
-                app:layout_constraintTop_toBottomOf="@+id/libraryImage3"
-                app:layout_constraintVertical_bias="0"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage4"
+                android:layout_alignParentRight="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage7"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/libraryImage4"
-                app:layout_constraintVertical_bias="0"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage5"
+                android:layout_alignParentLeft="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage8"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/libraryImage7"
-                app:layout_constraintTop_toBottomOf="@+id/libraryImage5"
-                app:layout_constraintVertical_bias="0"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage5"
+                android:layout_alignParentRight="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage9"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/libraryImage7"
-                app:layout_constraintTop_toBottomOf="@+id/libraryImage5"
-                app:layout_constraintVertical_bias="0"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage7"
+                android:layout_alignParentLeft="true"/>
 
             <ImageView
                 android:id="@+id/libraryImage10"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/libraryImage7"
-                app:layout_constraintTop_toBottomOf="@+id/libraryImage5"
-                app:layout_constraintVertical_bias="0"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:layout_below = "@+id/libraryImage8"
+                android:layout_alignParentRight="true"/>
 
-        </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
 
-    <ImageView
-        android:id="@+id/libraryBack"
-        android:layout_width="65dp"
-        android:layout_height="55dp"
-        android:src="@drawable/icon_back"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias=".90"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".98" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

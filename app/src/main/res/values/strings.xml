@@ -34,4 +34,5 @@
     <string name="rightAnswerNotification">You got the right answer!</string>
     <string name="yourScore">Your score:</string>
     <string name="yourFaces">Your faces</string>
+    <string name="imageSettingsTitle">Change the name and gender of the person!</string>
 </resources>

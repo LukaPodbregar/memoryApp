@@ -12,10 +12,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class Login extends AppCompatActivity {
@@ -23,10 +20,10 @@ public class Login extends AppCompatActivity {
     private String username, password, urlService, urlServiceImages, token, urlNames, rightAnswerNotification, wrongAnswerNotification;
     private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
     private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4;
-    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton;
+    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, libraryPreviousPageButton;
     EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup;
-    static int didUserSignin, rightAnswer;
-    private int pageNumber, rightAnswerCounter, wrongAnswerCounter;
+    static int didUserSignin, rightAnswer, imagesPerPage;
+    private int pageNumber, rightAnswerCounter, wrongAnswerCounter, pageNumberLibrary;
     public static Context contextOfApplication;
     TinyDB tinydb;
     ArrayList imagePath, imageGender, imageName, randomNames;
@@ -65,43 +62,82 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    private void library(){
+    private void library() {
         setContentView(R.layout.library_selection);
         Context applicationContext = Login.getContextOfApplication();
         TinyDB tinydb = new TinyDB(applicationContext);
+        pageNumberLibrary = 0;
+        imagesPerPage = 10;
         token = tinydb.getString("token");
         urlServiceImages = getResources().getString(R.string.URL_images);
         new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> {
-            loadLibrary(applicationContext, tinydb);
+            loadLibrary(tinydb, pageNumberLibrary);
         });
+
         libraryBackButton = findViewById(R.id.libraryBack);
         libraryBackButton.setOnClickListener(v -> {
             mainMenu();
         });
+
+        imagePath = tinydb.getListString("imagePath");
+        Object[] imagePathArray = imagePath.toArray();
+
+        libraryNextPageButton = findViewById(R.id.libraryNextPage);
+        double imageArrayLength = imagePathArray.length;
+        double imagesPerPage2 = imagesPerPage;
+        double maximumNumberOfPages = Math.ceil(imageArrayLength / imagesPerPage2)-1;
+        libraryNextPageButton.setOnClickListener(v -> {
+            if (pageNumberLibrary < maximumNumberOfPages) {
+                pageNumberLibrary = pageNumberLibrary + 1;
+                loadLibrary(tinydb, pageNumberLibrary);
+            }
+        });
+
+        libraryPreviousPageButton = findViewById(R.id.libraryPreviousPage);
+        libraryPreviousPageButton.setOnClickListener(v -> {
+            if (pageNumberLibrary != 0) {
+                pageNumberLibrary = pageNumberLibrary - 1;
+                loadLibrary(tinydb, pageNumberLibrary);
+            }
+        });
     }
 
-    private void loadLibrary(Context applicationContext, TinyDB tinydb){
+    private void loadLibrary(TinyDB tinydb, int pageNumberLibrary) {
         imagePath = tinydb.getListString("imagePath");
         imageGender = tinydb.getListString("imageGender");
         imageName = tinydb.getListString("imageName");
         urlNames = getResources().getString(R.string.URL_names);
 
         Object[] imagePathArray = imagePath.toArray();
-        Object[] imageNameArray = imageName.toArray();
-        Object[] imageGenderArray = imageGender.toArray();
+        //Object[] imageNameArray = imageName.toArray();
+        //Object[] imageGenderArray = imageGender.toArray();
 
-        ImageView[]  imageViews = new ImageView[imagePathArray.length];
+        ImageView[] imageViews = new ImageView[imagePathArray.length];
 
         for (int j = 0; j < imagePathArray.length; j++) {
             String viewImage = "libraryImage" + (j + 1);
             int resIDImage = getResources().getIdentifier(viewImage, "id", getPackageName());
             imageViews[j] = ((ImageView) findViewById(resIDImage));
         }
-        ImageView zz = imageViews[1];
-        for (int k = 0; k<imagePathArray.length; k++) {
-            String urlImage = "http://10.0.2.2/application/" + imagePathArray[k];
-            Glide.with(this).load(urlImage).into(imageViews[k]);
-        }
+        newImagePageLibrary(imagePathArray, imageViews, pageNumberLibrary);
+    }
+
+    private void newImagePageLibrary(Object[] imagePathArray, ImageView[] imageViews, int pageNumberLibrary) {
+        for (int k = (pageNumberLibrary * 10); k < (imagesPerPage + pageNumberLibrary * imagesPerPage); k++) {
+            if (k < imageViews.length){
+                String urlImage = "http://10.0.2.2/application/" + imagePathArray[k];
+                Glide.with(this).load(urlImage).centerCrop().into(imageViews[(k-(pageNumberLibrary * 10))]);
+            }
+            else{
+                imageViews[(k-(pageNumberLibrary * 10))].setImageResource(0);
+            }
+    }
+}
+
+
+    private void imageSettingsLibrary(ImageView[] imageViews, int k){
+        setContentView(R.layout.library_selection);
+        //Glide.with(this).load(urlImage).into(imageViews[k]);
     }
 
     private void game() {
@@ -119,6 +155,7 @@ public class Login extends AppCompatActivity {
         pageNumber = 0;
         rightAnswerCounter = 0;
         wrongAnswerCounter = 0;
+        int gameLength = 10;
         Context applicationContext = Login.getContextOfApplication();
         loadNewFace(pageNumber, applicationContext);
 
@@ -136,7 +173,7 @@ public class Login extends AppCompatActivity {
             }
             TinyDB tinydb = new TinyDB(applicationContext);
             imagePath = tinydb.getListString("imagePath");
-            if (pageNumber<imagePath.size()) {
+            if (pageNumber<gameLength) {
                 loadNewFace(pageNumber, applicationContext);
             }
             else {
@@ -152,7 +189,7 @@ public class Login extends AppCompatActivity {
             else{
                 wrongAnswer();
             }
-            if (pageNumber<imagePath.size()) {
+            if (pageNumber<gameLength) {
                 loadNewFace(pageNumber, applicationContext);
             }
             else {
@@ -168,7 +205,7 @@ public class Login extends AppCompatActivity {
             else{
                 wrongAnswer();
             }
-            if (pageNumber<imagePath.size()) {
+            if (pageNumber<gameLength) {
                 loadNewFace(pageNumber, applicationContext);
             }
             else {
@@ -184,7 +221,7 @@ public class Login extends AppCompatActivity {
             else{
                 wrongAnswer();
             }
-            if (pageNumber<imagePath.size()) {
+            if (pageNumber<gameLength) {
                 loadNewFace(pageNumber, applicationContext);
             }
             else {
@@ -239,7 +276,7 @@ public class Login extends AppCompatActivity {
 
         imageView = findViewById(R.id.downloadedImage);
         String urlImage = "http://10.0.2.2/application/"+imagePathArray[i];
-        Glide.with(this).load(urlImage).into(imageView);
+        Glide.with(this).load(urlImage).centerCrop().into(imageView);
 
         String tempGender = (String) imageGenderArray[i];
         new AsyncTaskExecutor().execute(new NamesAPI(tempGender, urlNames,this), (result) -> {
