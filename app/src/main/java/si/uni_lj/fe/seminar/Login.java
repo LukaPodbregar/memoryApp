@@ -3,10 +3,17 @@ package si.uni_lj.fe.seminar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,17 +24,19 @@ import java.util.Random;
 
 public class Login extends AppCompatActivity {
 
-    private String username, password, urlService, urlServiceImages, token, urlNames, rightAnswerNotification, wrongAnswerNotification;
+    private int SELECT_PICTURE = 200;
+    private String username, password, urlService, urlServiceImages, token, urlNames, rightAnswerNotification, wrongAnswerNotification, uploadName, uploadGender;
     private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
-    private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4;
-    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, libraryPreviousPageButton;
-    EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup;
+    private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4, newFaceButton, uploadButton;
+    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, libraryPreviousPageButton, uploadBackButton,
+            imageUploadSelectImageButton, imageUploadPreview;
+    EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup, uploadNameField;
     static int didUserSignin, rightAnswer, imagesPerPage;
-    private int pageNumber, rightAnswerCounter, wrongAnswerCounter, pageNumberLibrary;
+    private int pageNumber, rightAnswerCounter, wrongAnswerCounter, pageNumberLibrary, gameLength;
     public static Context contextOfApplication;
     TinyDB tinydb;
     ArrayList imagePath, imageGender, imageName, randomNames;
-
+    RadioGroup uploadGenderRadio;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,7 @@ public class Login extends AppCompatActivity {
         signoutButton = findViewById(R.id.signoutButton);
         startButton = findViewById(R.id.startGame);
         faceLibrary = findViewById(R.id.myFaces);
+        newFaceButton = findViewById(R.id.addNewFaces);
 
         signoutButton.setOnClickListener(v -> {
             setContentView(R.layout.login_tab_fragment);
@@ -60,6 +70,87 @@ public class Login extends AppCompatActivity {
         faceLibrary.setOnClickListener(v -> {
             library();
         });
+        newFaceButton.setOnClickListener(v -> {
+            faceUpload();
+        });
+    }
+
+    private void faceUpload(){
+        setContentView(R.layout.new_face_upload);
+        uploadButton = findViewById(R.id.uploadButton);
+        uploadNameField = findViewById(R.id.uploadNameField);
+        uploadGenderRadio = findViewById(R.id.radioGroupGender);
+        uploadBackButton = findViewById(R.id.uploadBack);
+        imageUploadSelectImageButton = findViewById(R.id.imageUploadSelectImage);
+
+        uploadBackButton.setOnClickListener(v -> {
+            mainMenu();
+        });
+
+        imageUploadSelectImageButton.setOnClickListener(v -> {
+            selectImage();
+        });
+
+        uploadButton.setOnClickListener(v -> {
+            uploadName = String.valueOf(uploadNameField.getText());
+
+            int checkedGender = uploadGenderRadio.getCheckedRadioButtonId();
+            if (checkedGender != -1) {
+                RadioButton selectedRadioButton = uploadGenderRadio.findViewById(checkedGender);
+                String selectedText = (String) selectedRadioButton.getText();
+                if (selectedText.equals("M")){
+                    uploadGender = "male";
+                }
+                else {
+                    uploadGender = "female";
+                }
+                if (!uploadName.equals("")) {
+                    //Todo: Upload selected image, create ImageUploadAPI
+                }
+                else {
+                    notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
+                }
+            }
+            else{
+                notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
+            }
+        });
+    }
+
+    private void selectImage(){
+        openGallery();
+    }
+
+    public void openGallery() {
+
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_PICTURE) {
+                Uri selectedImageUri = data.getData();
+                if (null != selectedImageUri) {
+                    imageUploadPreview = findViewById(R.id.imageUploadPreview);
+                    imageUploadPreview.setImageURI(selectedImageUri);
+                }
+            }
+        }
+    }
+
+    public String getPath(Uri uri) {
+
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+
+        return cursor.getString(column_index);
     }
 
     private void library() {
@@ -112,10 +203,10 @@ public class Login extends AppCompatActivity {
         //Object[] imageNameArray = imageName.toArray();
         //Object[] imageGenderArray = imageGender.toArray();
 
-        ImageView[] imageViews = new ImageView[imagePathArray.length];
+        ImageView[] imageViews = new ImageView[imagesPerPage];
 
-        for (int j = 0; j < imagePathArray.length; j++) {
-            String viewImage = "libraryImage" + (j + 1);
+        for (int j = 0; j < imagesPerPage; j++) {
+            String viewImage = "libraryImage" + j;
             int resIDImage = getResources().getIdentifier(viewImage, "id", getPackageName());
             imageViews[j] = ((ImageView) findViewById(resIDImage));
         }
@@ -123,15 +214,15 @@ public class Login extends AppCompatActivity {
     }
 
     private void newImagePageLibrary(Object[] imagePathArray, ImageView[] imageViews, int pageNumberLibrary) {
-        for (int k = (pageNumberLibrary * 10); k < (imagesPerPage + pageNumberLibrary * imagesPerPage); k++) {
-            if (k < imageViews.length){
+        for (int k = (pageNumberLibrary * imagesPerPage); k < (imagesPerPage + pageNumberLibrary * imagesPerPage); k++) {
+            if (k < imagePathArray.length){
                 String urlImage = "http://10.0.2.2/application/" + imagePathArray[k];
                 Glide.with(this).load(urlImage).centerCrop().into(imageViews[(k-(pageNumberLibrary * 10))]);
             }
             else{
-                imageViews[(k-(pageNumberLibrary * 10))].setImageResource(0);
+                imageViews[(k-(pageNumberLibrary * imagesPerPage))].setImageResource(0);
             }
-    }
+        }
 }
 
 
@@ -155,8 +246,15 @@ public class Login extends AppCompatActivity {
         pageNumber = 0;
         rightAnswerCounter = 0;
         wrongAnswerCounter = 0;
-        int gameLength = 10;
         Context applicationContext = Login.getContextOfApplication();
+        TinyDB tinydb = new TinyDB(applicationContext);
+        imagePath = tinydb.getListString("imagePath");
+        Object[] imagePathArray = imagePath.toArray();
+        gameLength = 10;
+        if (imagePathArray.length<gameLength){
+            gameLength =imagePathArray.length;
+        }
+
         loadNewFace(pageNumber, applicationContext);
 
         nameButton1 = findViewById(R.id.nameButton1);
@@ -171,7 +269,6 @@ public class Login extends AppCompatActivity {
             else{
                 wrongAnswer();
             }
-            TinyDB tinydb = new TinyDB(applicationContext);
             imagePath = tinydb.getListString("imagePath");
             if (pageNumber<gameLength) {
                 loadNewFace(pageNumber, applicationContext);

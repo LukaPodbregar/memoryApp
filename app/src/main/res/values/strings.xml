@@ -35,4 +35,12 @@
     <string name="yourScore">Your score:</string>
     <string name="yourFaces">Your faces</string>
     <string name="imageSettingsTitle">Change the name and gender of the person!</string>
+    <string name="uploadNewFace">Upload new face</string>
+    <string name="nameUpload">Name:</string>
+    <string name="genderUpload">Gender:</string>
+    <string name="previewUpload">Preview:</string>
+    <string name="uploadUpload">Upload</string>
+    <string name="female">F</string>
+    <string name="male">M</string>
+    <string name="pleaseSelectAllParameters">Please select all parameters</string>
 </resources>
