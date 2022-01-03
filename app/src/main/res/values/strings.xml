@@ -43,4 +43,7 @@
     <string name="female">F</string>
     <string name="male">M</string>
     <string name="pleaseSelectAllParameters">Please select all parameters</string>
+    <string name="URL_images_upload">http://10.0.2.2/application/imageUploadAndroid</string>
+    <string name="image_upload_successful">Image uploaded successfully</string>
+    <string name="image_upload_error">Error uploading image</string>
 </resources>

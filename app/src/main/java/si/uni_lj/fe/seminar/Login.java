@@ -19,24 +19,27 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Login extends AppCompatActivity {
 
     private int SELECT_PICTURE = 200;
-    private String username, password, urlService, urlServiceImages, token, urlNames, rightAnswerNotification, wrongAnswerNotification, uploadName, uploadGender;
+    private String username, password, urlService, urlServiceImages, urlServiceImagesUpload, token, urlNames, rightAnswerNotification, wrongAnswerNotification, uploadName, uploadGender;
     private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
     private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4, newFaceButton, uploadButton;
     private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, libraryPreviousPageButton, uploadBackButton,
             imageUploadSelectImageButton, imageUploadPreview;
-    EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup, uploadNameField;
+    private EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup, uploadNameField;
     static int didUserSignin, rightAnswer, imagesPerPage;
     private int pageNumber, rightAnswerCounter, wrongAnswerCounter, pageNumberLibrary, gameLength;
     public static Context contextOfApplication;
-    TinyDB tinydb;
-    ArrayList imagePath, imageGender, imageName, randomNames;
-    RadioGroup uploadGenderRadio;
+    private TinyDB tinydb;
+    private ArrayList imagePath, imageGender, imageName, randomNames;
+    private RadioGroup uploadGenderRadio;
+    private Bitmap bitmap;
+    private Uri selectedImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +108,11 @@ public class Login extends AppCompatActivity {
                     uploadGender = "female";
                 }
                 if (!uploadName.equals("")) {
-                    //Todo: Upload selected image, create ImageUploadAPI
+                    Context applicationContext = Login.getContextOfApplication();
+                    TinyDB tinydb = new TinyDB(applicationContext);
+                    token = tinydb.getString("token");
+                    urlServiceImagesUpload = getResources().getString(R.string.URL_images_upload);
+                    new AsyncTaskExecutor().execute(new ImageUploadAPI(token, selectedImageUri, uploadGender, uploadName, urlServiceImagesUpload, this), (result) -> {});
                 }
                 else {
                     notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
@@ -134,10 +141,15 @@ public class Login extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-                if (null != selectedImageUri) {
-                    imageUploadPreview = findViewById(R.id.imageUploadPreview);
-                    imageUploadPreview.setImageURI(selectedImageUri);
+                selectedImageUri = data.getData();
+                if (selectedImageUri != null) {
+                    try {
+                        imageUploadPreview = findViewById(R.id.imageUploadPreview);
+                        imageUploadPreview.setImageURI(selectedImageUri);
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
