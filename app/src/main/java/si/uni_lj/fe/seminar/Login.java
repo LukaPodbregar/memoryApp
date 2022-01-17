@@ -2,6 +2,8 @@ package si.uni_lj.fe.seminar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.content.CursorLoader;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,6 +22,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,7 +31,8 @@ import java.util.Random;
 public class Login extends AppCompatActivity {
 
     private int SELECT_PICTURE = 200;
-    private String username, password, urlService, urlServiceImages, urlServiceImagesUpload, token, urlNames, rightAnswerNotification, wrongAnswerNotification, uploadName, uploadGender;
+    private String username, password, urlService, urlServiceImages, urlServiceImagesUpload, token, urlNames, rightAnswerNotification, wrongAnswerNotification, uploadName, uploadGender,
+            selectedImageName, imageBase64;
     private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
     private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4, newFaceButton, uploadButton;
     private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, libraryPreviousPageButton, uploadBackButton,
@@ -112,7 +118,7 @@ public class Login extends AppCompatActivity {
                     TinyDB tinydb = new TinyDB(applicationContext);
                     token = tinydb.getString("token");
                     urlServiceImagesUpload = getResources().getString(R.string.URL_images_upload);
-                    new AsyncTaskExecutor().execute(new ImageUploadAPI(token, selectedImageUri, uploadGender, uploadName, urlServiceImagesUpload, this), (result) -> {});
+                    new AsyncTaskExecutor().execute(new ImageUploadAPI(token, selectedImageName, imageBase64, uploadGender, uploadName, urlServiceImagesUpload, this), (result) -> {});
                 }
                 else {
                     notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
@@ -129,7 +135,6 @@ public class Login extends AppCompatActivity {
     }
 
     public void openGallery() {
-
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -143,26 +148,40 @@ public class Login extends AppCompatActivity {
             if (requestCode == SELECT_PICTURE) {
                 selectedImageUri = data.getData();
                 if (selectedImageUri != null) {
+                    imageUploadPreview = findViewById(R.id.imageUploadPreview);
+                    imageUploadPreview.setImageURI(selectedImageUri);
+                    selectedImageName = getRealNameFromURI(selectedImageUri);
+                    Context applicationContext = getContextOfApplication();
                     try {
-                        imageUploadPreview = findViewById(R.id.imageUploadPreview);
-                        imageUploadPreview.setImageURI(selectedImageUri);
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+                        Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(applicationContext.getContentResolver(), selectedImageUri);
+                        imageBase64 = ConvertBitmapToBase64Format(imageBitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
                 }
             }
         }
     }
 
-    public String getPath(Uri uri) {
+    private String ConvertBitmapToBase64Format(Bitmap bitmap){
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+        byte[] byteFormat = stream.toByteArray();
+        String imageString = Base64.encodeToString(byteFormat, Base64.NO_WRAP);
+        return imageString;
+    }
 
-        String[] projection = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-
-        return cursor.getString(column_index);
+    private String getRealNameFromURI(Uri contentURI) {
+        String thePath = "no-path-found";
+        String[] filePathColumn = {MediaStore.Images.Media.DISPLAY_NAME};
+        Cursor cursor = getContentResolver().query(contentURI, filePathColumn, null, null, null);
+        if(cursor.moveToFirst()){
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            thePath = cursor.getString(columnIndex);
+        }
+        cursor.close();
+        return  thePath;
     }
 
     private void library() {
