@@ -1,5 +1,6 @@
 package si.uni_lj.fe.seminar;
 
+import androidx.annotation.ContentView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.content.CursorLoader;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -118,7 +120,9 @@ public class Login extends AppCompatActivity {
                     TinyDB tinydb = new TinyDB(applicationContext);
                     token = tinydb.getString("token");
                     urlServiceImagesUpload = getResources().getString(R.string.URL_images_upload);
-                    new AsyncTaskExecutor().execute(new ImageUploadAPI(token, selectedImageName, imageBase64, uploadGender, uploadName, urlServiceImagesUpload, this), (result) -> {});
+                    new AsyncTaskExecutor().execute(new ImageUploadAPI(token, selectedImageName, imageBase64, uploadGender, uploadName, urlServiceImagesUpload, this), (result) -> {
+                        imageUpload(result);
+                    });
                 }
                 else {
                     notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
@@ -128,6 +132,20 @@ public class Login extends AppCompatActivity {
                 notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
             }
         });
+    }
+
+    private void imageUpload(String result) {
+        String imageUploadedSuccessfully = getResources().getString(R.string.image_upload_successful);
+        String imageUploadedUnsuccessfully = getResources().getString(R.string.image_upload_error);
+        if (result.equals(imageUploadedSuccessfully)){
+            notificationToast(imageUploadedSuccessfully);
+            uploadGenderRadio.clearCheck();
+            uploadNameField.setText("");
+            imageUploadPreview.setImageResource(0);
+        }
+        else {
+            notificationToast(imageUploadedUnsuccessfully);
+        }
     }
 
     private void selectImage(){
@@ -231,8 +249,8 @@ public class Login extends AppCompatActivity {
         urlNames = getResources().getString(R.string.URL_names);
 
         Object[] imagePathArray = imagePath.toArray();
-        //Object[] imageNameArray = imageName.toArray();
-        //Object[] imageGenderArray = imageGender.toArray();
+        Object[] imageNameArray = imageName.toArray();
+        Object[] imageGenderArray = imageGender.toArray();
 
         ImageView[] imageViews = new ImageView[imagesPerPage];
 
@@ -241,26 +259,23 @@ public class Login extends AppCompatActivity {
             int resIDImage = getResources().getIdentifier(viewImage, "id", getPackageName());
             imageViews[j] = ((ImageView) findViewById(resIDImage));
         }
-        newImagePageLibrary(imagePathArray, imageViews, pageNumberLibrary);
+        newImagePageLibrary(imagePathArray, imageViews, pageNumberLibrary, imageNameArray, imageGenderArray);
     }
 
-    private void newImagePageLibrary(Object[] imagePathArray, ImageView[] imageViews, int pageNumberLibrary) {
+    private void newImagePageLibrary(Object[] imagePathArray, ImageView[] imageViews, int pageNumberLibrary, Object[] imageNameArray, Object[] imageGenderArray) {
         for (int k = (pageNumberLibrary * imagesPerPage); k < (imagesPerPage + pageNumberLibrary * imagesPerPage); k++) {
             if (k < imagePathArray.length){
+                int j = k-(pageNumberLibrary * 10);
                 String urlImage = "http://10.0.2.2/application/" + imagePathArray[k];
-                Glide.with(this).load(urlImage).centerCrop().into(imageViews[(k-(pageNumberLibrary * 10))]);
+                Glide.with(this).load(urlImage).centerCrop().into(imageViews[j]);
+                LibraryImageSettings LibraryImageSettings = new LibraryImageSettings();
+                LibraryImageSettings.libraryImageSettings(imageViews[j], imageNameArray[k], imageGenderArray[k], imagePathArray[k]);
             }
             else{
                 imageViews[(k-(pageNumberLibrary * imagesPerPage))].setImageResource(0);
             }
         }
 }
-
-
-    private void imageSettingsLibrary(ImageView[] imageViews, int k){
-        setContentView(R.layout.library_selection);
-        //Glide.with(this).load(urlImage).into(imageViews[k]);
-    }
 
     private void game() {
         Context applicationContext = Login.getContextOfApplication();
