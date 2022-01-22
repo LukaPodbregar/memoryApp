@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Login extends AppCompatActivity {
@@ -37,8 +38,8 @@ public class Login extends AppCompatActivity {
     private String username, password, urlService, urlServiceImages, urlServiceImagesUpload, token, urlNames, rightAnswerNotification, wrongAnswerNotification, uploadName, uploadGender,
             selectedImageName, imageBase64;
     private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
-    private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4, newFaceButton, uploadButton, imageSettingEditButton;
-    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, librarySettingsBackButton, libraryPreviousPageButton, uploadBackButton,
+    private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4, newFaceButton, uploadButton;
+    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, libraryPreviousPageButton, uploadBackButton,
             imageUploadSelectImageButton, imageUploadPreview;
     private EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup, uploadNameField;
     static int didUserSignin, rightAnswer, imagesPerPage;
@@ -46,7 +47,7 @@ public class Login extends AppCompatActivity {
     public static Context contextOfApplication;
     private TinyDB tinydb;
     private ArrayList imagePath, imageGender, imageName, randomNames;
-    private RadioGroup uploadGenderRadio, imageSettingsGenderRadio;
+    private RadioGroup uploadGenderRadio;
     private Bitmap bitmap;
     private Uri selectedImageUri;
 
@@ -273,8 +274,10 @@ public class Login extends AppCompatActivity {
 
                 String currentImageName = (String) imageNameArray[k];
                 String currentImageGender = (String) imageGenderArray[k];
+                String currentImagePath = (String) imagePathArray[k];
+                int num = k;
                 imageViews[j].setOnClickListener(v -> {
-                    libraryImageSettings(currentImageName, currentImageGender, urlImage);
+                    libraryImageSettings(currentImageName, currentImageGender, currentImagePath, num);
                 });
             }
             else{
@@ -283,11 +286,11 @@ public class Login extends AppCompatActivity {
         }
 }
 
-    private void libraryImageSettings(String imageName, String imageGender, String imageUrl){
+    private void libraryImageSettings(String imageName, String imageGender, String currentImagePath, int k){
         setContentView(R.layout.image_settings_library);
 
         ImageView imageSettingsImageView = findViewById(R.id.imageSettingImage);
-        imageSettingsGenderRadio = findViewById(R.id.imageSettingRadioGroupGender);
+        RadioGroup imageSettingsGenderRadio = findViewById(R.id.imageSettingRadioGroupGender);
         EditText imageSettingName = findViewById(R.id.imageSettingName);
 
         if (imageGender.equals("male")){
@@ -303,19 +306,88 @@ public class Login extends AppCompatActivity {
             imageSettingsGenderRadio.getChildAt(i).setEnabled(false);
         }
         imageSettingName.setEnabled(false);
-        Glide.with(this).load(imageUrl).centerCrop().into(imageSettingsImageView);
+        String urlImage = "http://10.0.2.2/application/" + currentImagePath;
+        Glide.with(this).load(urlImage).centerCrop().into(imageSettingsImageView);
 
-        librarySettingsBackButton = findViewById(R.id.imageSettingBack);
+        ImageView librarySettingsBackButton = findViewById(R.id.imageSettingBack);
         librarySettingsBackButton.setOnClickListener(v -> {
             library();
         });
 
-        imageSettingEditButton = findViewById(R.id.imageSettingEditButton);
+        Button imageSettingEditButton = findViewById(R.id.imageSettingEditButton);
         imageSettingEditButton.setOnClickListener(v -> {
-            for (int i = 0; i < imageSettingsGenderRadio.getChildCount(); i++) {
-                imageSettingsGenderRadio.getChildAt(i).setEnabled(true);
-                imageSettingName.setEnabled(true);
+            imageSettingsEdit(imageName, imageGender, currentImagePath, k);
+        });
+    }
+
+    private void imageSettingsEdit(String imageName, String imageGender, String currentImagePath, int k) {
+        setContentView(R.layout.image_settings_library_edit);
+
+        ImageView imageSettingsImageView = findViewById(R.id.imageSettingEditImage);
+        RadioGroup imageSettingsGenderRadio = findViewById(R.id.imageSettingEditRadioGroupGender);
+        EditText imageSettingName = findViewById(R.id.imageSettingEditName);
+        Context applicationContext = Login.getContextOfApplication();
+        TinyDB tinydb = new TinyDB(applicationContext);
+
+        if (imageGender.equals("male")){
+            imageSettingsGenderRadio.check(R.id.imageSettingEditRadioGroupMale);
+        }
+        else if (imageGender.equals("female")){
+            imageSettingsGenderRadio.check(R.id.imageSettingEditRadioGroupFemale);
+        }
+        imageSettingName.setText((String) imageName);
+
+        String urlImage = "http://10.0.2.2/application/" + currentImagePath;
+        Glide.with(this).load(urlImage).centerCrop().into(imageSettingsImageView);
+
+        Button librarySettingUploadButton = findViewById(R.id.imageSettingUploadButton);
+        librarySettingUploadButton.setOnClickListener(v -> {
+            String imageSettingEditText = String.valueOf(imageSettingName.getText());
+            int checkedGender = imageSettingsGenderRadio.getCheckedRadioButtonId();
+            if (checkedGender != -1) {
+                RadioButton selectedRadioButton = imageSettingsGenderRadio.findViewById(checkedGender);
+                String selectedText = (String) selectedRadioButton.getText();
+                String imageSettingEditGender = "";
+                if (selectedText.equals("M")){
+                    imageSettingEditGender = "male";
+                }
+                else {
+                    imageSettingEditGender = "female";
+                }
+                if (!imageSettingEditText.equals("")) {
+                    token = tinydb.getString("token");
+                    String urlServiceImagesUpdate = getResources().getString(R.string.URL_images_update);
+                    new AsyncTaskExecutor().execute(new imageUpdateAPI(token, imageSettingEditText, imageSettingEditGender, currentImagePath, urlServiceImagesUpdate, this), (result) -> {
+                        notificationToast(result);
+                    });
+                }
+                else {
+                    notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
+                }
             }
+            else{
+                notificationToast(getResources().getString(R.string.pleaseSelectAllParameters));
+            }
+        });
+
+        ImageView librarySettingsBackButton = findViewById(R.id.imageSettingEditBack);
+        librarySettingsBackButton.setOnClickListener(v -> {
+            token = tinydb.getString("token");
+            new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> {
+                List imageGenderUpdated = tinydb.getListString("imageGender");
+                List imageNameUpdated = tinydb.getListString("imageName");
+                List imagePathUpdated = tinydb.getListString("imagePath");
+
+                Object[] imageNameArray = imageNameUpdated.toArray();
+                Object[] imageGenderArray = imageGenderUpdated.toArray();
+                Object[] imagePathArray = imagePathUpdated.toArray();
+
+                String imageNameUpdatedString = (String) imageNameArray[k];
+                String imageGenderUpdatedString = (String) imageGenderArray[k];
+                String imagePathUpdatedString = (String) imagePathArray[k];
+
+                libraryImageSettings(imageNameUpdatedString, imageGenderUpdatedString, imagePathUpdatedString, k);
+            });
         });
     }
 

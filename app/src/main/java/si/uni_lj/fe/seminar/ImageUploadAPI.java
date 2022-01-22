@@ -38,7 +38,6 @@ class ImageUploadAPI implements Callable<String> {
     private String selectedImageBase64;
     private String extension;
     private final Activity callerActivity;
-    private InputStream inputStream;
 
     public ImageUploadAPI(String token, String imageName, String imageBase64, String gender, String name, String urlService, Activity callerActivity) {
         this.urlService = String.valueOf(urlService);
@@ -80,6 +79,8 @@ class ImageUploadAPI implements Callable<String> {
     private int connect(String token) throws IOException {
         URL url = new URL(urlService + "/" + token);
         try {
+            //TODO: do better
+
             AndroidNetworking.setParserFactory(new JacksonParserFactory());
             AndroidNetworking.post(String.valueOf(url))
                     .addBodyParameter("gender", gender)

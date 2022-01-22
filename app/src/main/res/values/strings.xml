@@ -23,6 +23,7 @@
     <string name="URL_images">http://10.0.2.2/application/images</string>
     <string name="URL_images_random">http://10.0.2.2/application/imagesRandom</string>
     <string name="URL_names">http://10.0.2.2/application/names</string>
+    <string name="URL_images_update">http://10.0.2.2/application/imageUpdate</string>
     <string name="images_download_successful">Images download successful</string>
     <string name="images_download_error">Error downloading images</string>
     <string name="names_download_successful">Names download successful</string>
@@ -48,4 +49,6 @@
     <string name="image_upload_successful">Image uploaded successfully</string>
     <string name="image_upload_error">Error uploading image</string>
     <string name="imageSettingsEdit">Edit</string>
+    <string name="imageSettingsUpload">Upload</string>
+    <string name="image_update_successful">Updated face information successfully!</string>
 </resources>
