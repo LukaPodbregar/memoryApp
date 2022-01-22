@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -36,8 +37,8 @@ public class Login extends AppCompatActivity {
     private String username, password, urlService, urlServiceImages, urlServiceImagesUpload, token, urlNames, rightAnswerNotification, wrongAnswerNotification, uploadName, uploadGender,
             selectedImageName, imageBase64;
     private TextView createAccount, faceNumber, rightAnswerCount, wrongAnswerCount;
-    private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4, newFaceButton, uploadButton;
-    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, libraryPreviousPageButton, uploadBackButton,
+    private Button signinButton, signupButton, startButton, faceLibrary, nameButton1, nameButton2, nameButton3, nameButton4, newFaceButton, uploadButton, imageSettingEditButton;
+    private ImageView backButton, signoutButton, imageView, summaryBackButton, libraryBackButton, libraryNextPageButton, librarySettingsBackButton, libraryPreviousPageButton, uploadBackButton,
             imageUploadSelectImageButton, imageUploadPreview;
     private EditText usernameField, passwordField, usernameFieldSignup, passwordFieldSignup, uploadNameField;
     static int didUserSignin, rightAnswer, imagesPerPage;
@@ -45,7 +46,7 @@ public class Login extends AppCompatActivity {
     public static Context contextOfApplication;
     private TinyDB tinydb;
     private ArrayList imagePath, imageGender, imageName, randomNames;
-    private RadioGroup uploadGenderRadio;
+    private RadioGroup uploadGenderRadio, imageSettingsGenderRadio;
     private Bitmap bitmap;
     private Uri selectedImageUri;
 
@@ -240,6 +241,7 @@ public class Login extends AppCompatActivity {
                 loadLibrary(tinydb, pageNumberLibrary);
             }
         });
+
     }
 
     private void loadLibrary(TinyDB tinydb, int pageNumberLibrary) {
@@ -268,8 +270,12 @@ public class Login extends AppCompatActivity {
                 int j = k-(pageNumberLibrary * 10);
                 String urlImage = "http://10.0.2.2/application/" + imagePathArray[k];
                 Glide.with(this).load(urlImage).centerCrop().into(imageViews[j]);
-                LibraryImageSettings LibraryImageSettings = new LibraryImageSettings();
-                LibraryImageSettings.libraryImageSettings(imageViews[j], imageNameArray[k], imageGenderArray[k], imagePathArray[k]);
+
+                String currentImageName = (String) imageNameArray[k];
+                String currentImageGender = (String) imageGenderArray[k];
+                imageViews[j].setOnClickListener(v -> {
+                    libraryImageSettings(currentImageName, currentImageGender, urlImage);
+                });
             }
             else{
                 imageViews[(k-(pageNumberLibrary * imagesPerPage))].setImageResource(0);
@@ -277,11 +283,48 @@ public class Login extends AppCompatActivity {
         }
 }
 
+    private void libraryImageSettings(String imageName, String imageGender, String imageUrl){
+        setContentView(R.layout.image_settings_library);
+
+        ImageView imageSettingsImageView = findViewById(R.id.imageSettingImage);
+        imageSettingsGenderRadio = findViewById(R.id.imageSettingRadioGroupGender);
+        EditText imageSettingName = findViewById(R.id.imageSettingName);
+
+        if (imageGender.equals("male")){
+            imageSettingsGenderRadio.check(R.id.imageSettingRadioGroupMale);
+        }
+        else if (imageGender.equals("female")){
+            imageSettingsGenderRadio.check(R.id.imageSettingRadioGroupFemale);
+        }
+
+        imageSettingName.setText((String) imageName);
+
+        for (int i = 0; i < imageSettingsGenderRadio.getChildCount(); i++) {
+            imageSettingsGenderRadio.getChildAt(i).setEnabled(false);
+        }
+        imageSettingName.setEnabled(false);
+        Glide.with(this).load(imageUrl).centerCrop().into(imageSettingsImageView);
+
+        librarySettingsBackButton = findViewById(R.id.imageSettingBack);
+        librarySettingsBackButton.setOnClickListener(v -> {
+            library();
+        });
+
+        imageSettingEditButton = findViewById(R.id.imageSettingEditButton);
+        imageSettingEditButton.setOnClickListener(v -> {
+            for (int i = 0; i < imageSettingsGenderRadio.getChildCount(); i++) {
+                imageSettingsGenderRadio.getChildAt(i).setEnabled(true);
+                imageSettingName.setEnabled(true);
+            }
+        });
+    }
+
+
     private void game() {
         Context applicationContext = Login.getContextOfApplication();
         TinyDB tinydb = new TinyDB(applicationContext);
         token = tinydb.getString("token");
-        urlServiceImages = getResources().getString(R.string.URL_images);
+        urlServiceImages = getResources().getString(R.string.URL_images_random);
         setContentView(R.layout.game_main);
         new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> {
             startGame();

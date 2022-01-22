@@ -21,6 +21,7 @@
     <string name="addNewFaces">Add new faces</string>
     <string name="myFaces">My faces</string>
     <string name="URL_images">http://10.0.2.2/application/images</string>
+    <string name="URL_images_random">http://10.0.2.2/application/imagesRandom</string>
     <string name="URL_names">http://10.0.2.2/application/names</string>
     <string name="images_download_successful">Images download successful</string>
     <string name="images_download_error">Error downloading images</string>
@@ -46,4 +47,5 @@
     <string name="URL_images_upload">http://10.0.2.2/application/imageUploadAndroid</string>
     <string name="image_upload_successful">Image uploaded successfully</string>
     <string name="image_upload_error">Error uploading image</string>
+    <string name="imageSettingsEdit">Edit</string>
 </resources>
