@@ -1,11 +1,11 @@
 package si.uni_lj.fe.seminar;
 
-import androidx.annotation.ContentView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.loader.content.CursorLoader;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,10 +24,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -348,6 +346,7 @@ public class Login extends AppCompatActivity {
                 RadioButton selectedRadioButton = imageSettingsGenderRadio.findViewById(checkedGender);
                 String selectedText = (String) selectedRadioButton.getText();
                 String imageSettingEditGender = "";
+                String urlServiceImagesUpdate = getResources().getString(R.string.URL_images_update);
                 if (selectedText.equals("M")){
                     imageSettingEditGender = "male";
                 }
@@ -356,9 +355,15 @@ public class Login extends AppCompatActivity {
                 }
                 if (!imageSettingEditText.equals("")) {
                     token = tinydb.getString("token");
-                    String urlServiceImagesUpdate = getResources().getString(R.string.URL_images_update);
                     new AsyncTaskExecutor().execute(new imageUpdateAPI(token, imageSettingEditText, imageSettingEditGender, currentImagePath, urlServiceImagesUpdate, this), (result) -> {
                         notificationToast(result);
+                        new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result2) -> {
+                            List updatedImageList = getUpdatedImage(k);
+                            String imageNameUpdatedString = (String) updatedImageList.get(0);
+                            String imageGenderUpdatedString = (String) updatedImageList.get(1);
+                            String imagePathUpdatedString = (String) updatedImageList.get(2);
+                            libraryImageSettings(imageNameUpdatedString, imageGenderUpdatedString, imagePathUpdatedString, k);
+                        });
                     });
                 }
                 else {
@@ -374,21 +379,59 @@ public class Login extends AppCompatActivity {
         librarySettingsBackButton.setOnClickListener(v -> {
             token = tinydb.getString("token");
             new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> {
-                List imageGenderUpdated = tinydb.getListString("imageGender");
-                List imageNameUpdated = tinydb.getListString("imageName");
-                List imagePathUpdated = tinydb.getListString("imagePath");
-
-                Object[] imageNameArray = imageNameUpdated.toArray();
-                Object[] imageGenderArray = imageGenderUpdated.toArray();
-                Object[] imagePathArray = imagePathUpdated.toArray();
-
-                String imageNameUpdatedString = (String) imageNameArray[k];
-                String imageGenderUpdatedString = (String) imageGenderArray[k];
-                String imagePathUpdatedString = (String) imagePathArray[k];
-
+                List updatedImageList = getUpdatedImage(k);
+                String imageNameUpdatedString = (String) updatedImageList.get(0);
+                String imageGenderUpdatedString = (String) updatedImageList.get(1);
+                String imagePathUpdatedString = (String) updatedImageList.get(2);
                 libraryImageSettings(imageNameUpdatedString, imageGenderUpdatedString, imagePathUpdatedString, k);
             });
         });
+
+        ImageView librarySettingsDeleteButton = findViewById(R.id.imageSettingEditDelete);
+        librarySettingsDeleteButton.setOnClickListener(v -> {
+            String urlServiceImagesUpdate = getResources().getString(R.string.URL_images_delete);
+            confirmationAlert(token, currentImagePath, urlServiceImagesUpdate, this);
+        });
+    }
+
+    private void confirmationAlert(String token, String imagePath, String urlService, Activity callerActivity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getResources().getString(R.string.confirmation))
+                .setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new AsyncTaskExecutor().execute(new imageDeleteAPI(token, imagePath, urlService, callerActivity), (result) -> {
+                            notificationToast(result);
+                            library();
+                        });
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private static List<Object> getUpdatedImage(int k){
+        Context applicationContext = getContextOfApplication();
+        TinyDB tinydb = new TinyDB(applicationContext);
+        List imageGenderUpdated = tinydb.getListString("imageGender");
+        List imageNameUpdated = tinydb.getListString("imageName");
+        List imagePathUpdated = tinydb.getListString("imagePath");
+
+        Object[] imageNameArray = imageNameUpdated.toArray();
+        Object[] imageGenderArray = imageGenderUpdated.toArray();
+        Object[] imagePathArray = imagePathUpdated.toArray();
+
+        String imageNameUpdatedString = (String) imageNameArray[k];
+        String imageGenderUpdatedString = (String) imageGenderArray[k];
+        String imagePathUpdatedString = (String) imagePathArray[k];
+
+        return Arrays.asList(imageNameUpdatedString, imageGenderUpdatedString, imagePathUpdatedString);
     }
 
 
@@ -653,6 +696,7 @@ public class Login extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
 
     public static Context getContextOfApplication(){
         return contextOfApplication;

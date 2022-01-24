@@ -46,9 +46,14 @@
     <string name="male">M</string>
     <string name="pleaseSelectAllParameters">Please select all parameters</string>
     <string name="URL_images_upload">http://10.0.2.2/application/imageUploadAndroid</string>
+    <string name="URL_images_delete">http://10.0.2.2/application/imageDelete</string>
     <string name="image_upload_successful">Image uploaded successfully</string>
     <string name="image_upload_error">Error uploading image</string>
     <string name="imageSettingsEdit">Edit</string>
     <string name="imageSettingsUpload">Upload</string>
     <string name="image_update_successful">Updated face information successfully!</string>
+    <string name="image_delete_successful">Image deleted successfully!</string>
+    <string name="confirmation">Are you sure you want to delete this face?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 </resources>
