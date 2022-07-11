@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
+// This API allows user to sign up
 class SignupAPI implements Callable<String> {
     private final String username, password, urlService;
     private final Activity callerActivity;
@@ -59,6 +60,7 @@ class SignupAPI implements Callable<String> {
     }
 
     private int connect(String username, String password) throws IOException {
+        // Create the correct url
         URL url = new URL(urlService);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

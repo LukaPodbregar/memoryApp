@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
+// This API allows user to update Image data
 class imageUpdateAPI implements Callable<String> {
     private final String imageName, imageGender, urlService, imagePath, token;
     private final Activity callerActivity;
@@ -60,6 +61,7 @@ class imageUpdateAPI implements Callable<String> {
     }
 
     private int connect(String token, String imageName, String imageGender, String imagePath) throws IOException {
+        // Create the correct url
         URL url = new URL(urlService + "/" + token);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -70,6 +72,7 @@ class imageUpdateAPI implements Callable<String> {
         conn.setDoInput(true);
 
         try {
+            // Update Image data (send as JSON)
             JSONObject json = new JSONObject();
             json.put("imageName", imageName);
             json.put("gender", imageGender);

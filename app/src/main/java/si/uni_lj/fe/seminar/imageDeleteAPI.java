@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
+// This API allows user to delete images
 class imageDeleteAPI implements Callable<String> {
     private final String urlService, imagePath, token;
     private final Activity callerActivity;
@@ -58,6 +59,7 @@ class imageDeleteAPI implements Callable<String> {
     }
 
     private int connect(String token, String imagePath) throws IOException {
+        // Create the correct url
         URL url = new URL(urlService + "/" + token + '&' + imagePath);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

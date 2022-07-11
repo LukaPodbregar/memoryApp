@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
+// This API gets 10 random names of certain gender
 class NamesAPI implements Callable<String> {
     private String gender, urlService;
     private final Activity callerActivity;
@@ -63,6 +64,7 @@ class NamesAPI implements Callable<String> {
     }
 
     private int connect(String gender) throws IOException {
+        // Create the correct url
         URL url = new URL(urlService+"/"+gender);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -80,9 +82,10 @@ class NamesAPI implements Callable<String> {
             inputStream = conn.getInputStream();
             returnJson = convertStreamToString(inputStream);
             try {
+                // Save the returned names into database
                 JSONArray jsonArray = new JSONArray(returnJson);
                 String names[] =new String[jsonArray.length()];
-                Context applicationContext = Login.getContextOfApplication();
+                Context applicationContext = MainActivity.getContextOfApplication();
                 TinyDB tinydb = new TinyDB(applicationContext);
 
                 for(int i=0;i<jsonArray.length();i++){

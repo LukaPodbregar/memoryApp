@@ -34,6 +34,7 @@
     <string name="nameButton4" />
     <string name="outOf">/10</string>
     <string name="rightAnswerNotification">You got the right answer!</string>
+    <string name="wrongAnswerNotification">You got the wrong answer!</string>
     <string name="yourScore">Your score:</string>
     <string name="yourFaces">Your faces</string>
     <string name="imageSettingsTitle">Change the name and gender of the person!</string>
@@ -56,4 +57,5 @@
     <string name="confirmation">Are you sure you want to delete this face?</string>
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
+    <string name="noFacesUploadedError"> No Faces uploaded! \nHead to ADD NEW FACES to add a Face!</string>
 </resources>

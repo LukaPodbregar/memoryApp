@@ -11,32 +11,18 @@ import android.util.Log;
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
-import com.androidnetworking.interfaces.JSONArrayRequestListener;
-import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
-import com.androidnetworking.interfaces.StringRequestListener;
 import com.jacksonandroidnetworking.JacksonParserFactory;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.concurrent.Callable;
-
-import okhttp3.OkHttp;
 import okhttp3.Response;
 
+// This API allows user to upload new Image
 class ImageUploadAPI implements Callable<String> {
-    private String token;
-    private String urlService;
-    private String gender;
-    private String name;
+    private String token, urlService, gender, name, selectedImageName, selectedImageBase64, extension;
     private int serverResponse;
-    private String selectedImageName;
-    private String selectedImageBase64;
-    private String extension;
     private final Activity callerActivity;
 
     public ImageUploadAPI(String token, String imageName, String imageBase64, String gender, String name, String urlService, Activity callerActivity) {
@@ -77,10 +63,12 @@ class ImageUploadAPI implements Callable<String> {
     }
 
     private int connect(String token) throws IOException {
+        // Create the correct url
         URL url = new URL(urlService + "/" + token);
         try {
             //TODO: do better
 
+            // Build an object to upload (used okHttp library), image to upload is in base64 format
             AndroidNetworking.setParserFactory(new JacksonParserFactory());
             AndroidNetworking.post(String.valueOf(url))
                     .addBodyParameter("gender", gender)

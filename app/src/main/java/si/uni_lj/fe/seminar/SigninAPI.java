@@ -15,15 +15,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
-
-
-class LoginAPI implements Callable<String> {
+// This API allows user to sign in
+class Signin implements Callable<String> {
     private final String username, password, urlService;
     private final Activity callerActivity;
     private InputStream inputStream;
     private String returnJson, token;
 
-    public LoginAPI(String username, String password, String urlService, Activity callerActivity) {
+    public Signin(String username, String password, String urlService, Activity callerActivity) {
         this.username = String.valueOf(username);
         this.password = String.valueOf(password);
         this.urlService = String.valueOf(urlService);
@@ -46,7 +45,7 @@ class LoginAPI implements Callable<String> {
                 int responseCode = connect(username, password);
 
                 if(responseCode==200){
-                    Login.didUserSignin = 1;
+                    MainActivity.didUserSignin = 1;
                     return callerActivity.getResources().getString(R.string.login_successfully);
                 }
                 if(responseCode==401){
@@ -68,6 +67,7 @@ class LoginAPI implements Callable<String> {
     // Given a URL, establishes an HttpUrlConnection and retrieves
     // the content as a InputStream, which it returns as a string.
     private int connect(String username, String password) throws IOException {
+        // Create the correct url
         URL url = new URL(urlService+"/"+username+"/"+password);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -88,7 +88,7 @@ class LoginAPI implements Callable<String> {
                 org.json.JSONObject jsonObj = new JSONObject(returnJson);
                 token = jsonObj.get("token").toString();
 
-                Context applicationContext = Login.getContextOfApplication();
+                Context applicationContext = MainActivity.getContextOfApplication();
                 TinyDB tinydb = new TinyDB(applicationContext);
                 tinydb.putString("token",token);
 
