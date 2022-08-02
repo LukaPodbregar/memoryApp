@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         Button startButton = findViewById(R.id.startGame), newFaceButton = findViewById(R.id.addNewFaces), faceLibrary = findViewById(R.id.myFaces);
 
         // Start game button
-        startButton.setOnClickListener(v -> startGame());
+        startButton.setOnClickListener(v -> gameSelection());
 
         // Library button
         faceLibrary.setOnClickListener(v -> library());
@@ -79,6 +79,22 @@ public class MainActivity extends AppCompatActivity {
             signinAction();
         });
     }
+
+    // Function allows user to select between custom and preset Faces game
+    private void gameSelection(){
+        setContentView(R.layout.game_selection);
+        Button customGameButton = findViewById(R.id.gameSelectionCustomButton);
+        Button presetGameButton = findViewById(R.id.gameSelectionPresetButton);
+
+        ImageView gameSelectionBackButton = findViewById(R.id.gameSelectionBack);
+
+        // Back button -> return to Main menu
+        gameSelectionBackButton.setOnClickListener(v -> mainMenu());
+
+        customGameButton.setOnClickListener(v -> startGameCustom());
+        presetGameButton.setOnClickListener(v -> startGamePreset());
+    }
+
 
     // Upload new Image function
     private void faceUpload(){
@@ -485,13 +501,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Function that is called when new game is started. It gets Image data via ImagesAPI
-    private void startGame() {
+    private void startGameCustom() {
         Context applicationContext = MainActivity.getContextOfApplication();
         TinyDB tinydb = new TinyDB(applicationContext);
         token = tinydb.getString("token");
         String urlServiceImages = getResources().getString(R.string.URL_images_random);
         // Get Image data and start new game
         new AsyncTaskExecutor().execute(new ImagesAPI(token, urlServiceImages, this), (result) -> game());
+    }
+
+    private void startGamePreset() {
+        String urlServiceImages = getResources().getString(R.string.URL_images_preset);
+        new AsyncTaskExecutor().execute(new ImagesPresetAPI(urlServiceImages, this), (result) -> game());
     }
 
     // Function is logic behind the actual game

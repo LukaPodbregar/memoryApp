@@ -24,6 +24,7 @@
     <string name="URL_images_random">http://10.0.2.2/application/imagesRandom</string>
     <string name="URL_names">http://10.0.2.2/application/names</string>
     <string name="URL_images_update">http://10.0.2.2/application/imageUpdate</string>
+    <string name="URL_images_preset">http://10.0.2.2/application/images</string>
     <string name="images_download_successful">Images download successful</string>
     <string name="images_download_error">Error downloading images</string>
     <string name="names_download_successful">Names download successful</string>
@@ -58,4 +59,7 @@
     <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="noFacesUploadedError"> No Faces uploaded! \nHead to ADD NEW FACES to add a Face!</string>
+    <string name="custom">Custom game</string>
+    <string name="preset">Preset game</string>
+    <string name="gameSelection">Select game type! \n For a game with famous faces, select Preset game. \n For a game with custom faces, select Custom game.</string>
 </resources>
