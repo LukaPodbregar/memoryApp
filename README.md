@@ -1,2 +1,2 @@
 # memoryApp
-Memory app
+Android memory app by Luka Podbregar
