@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+/app/src/androidTest/java/si/uni_lj/fe/seminar/ExampleInstrumentedTest.java
