@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MemoryApp</string>
+    <string name="app_name">Face remember</string>
     <string name="network_error">Network error!</string>
     <string name="service_error">Service error!</string>
     <string name="login_successfully">Login successful!</string>

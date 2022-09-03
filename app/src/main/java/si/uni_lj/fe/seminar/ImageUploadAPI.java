@@ -66,7 +66,6 @@ class ImageUploadAPI implements Callable<String> {
         // Create the correct url
         URL url = new URL(urlService + "/" + token);
         try {
-            //TODO: do better
 
             // Build an object to upload (used okHttp library), image to upload is in base64 format
             AndroidNetworking.setParserFactory(new JacksonParserFactory());
